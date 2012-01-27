@@ -54,8 +54,13 @@ start_link () ->
 -spec(init/1::([]) -> init_return()).
 init ([]) ->
   process_flag (trap_exit, true),
-  SearchDir = filename:join ([filename:dirname (code:which (?MODULE)), "..", "ebin"]),
-  case erl_ddll:load (SearchDir, "setuid_drv")
+%%  EbinDir = filename:join ([filename:dirname (code:which (?MODULE)), "..", "ebin"]),
+%%  PrivDir = filename:join ([filename:dirname (code:which (?MODULE)), "..", "priv"]),
+  TempDir=filename:dirname(filename:dirname(filename:dirname (code:which (?MODULE)))),
+  RelDir =filename:join(filename:dirname(TempDir),filename:basename(TempDir,".ez"))++"/priv",
+
+  io:format('~n~w~n',[RelDir]),
+  case erl_ddll:load (RelDir, "setuid_drv")
   of
     ok -> 
       Port = open_port ({spawn, "setuid_drv"}, [binary]),
